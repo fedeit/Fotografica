@@ -1,0 +1,19 @@
+{
+  "name": "fotografica_server",
+  "version": "1.0.0",
+  "description": "Server for the Fotografica photo manager webapp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fedeit/Fotografica_server.git"
+  },
+  "author": "Federico Galbiati",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fedeit/Fotografica_server/issues"
+  },
+  "homepage": "https://github.com/fedeit/Fotografica_server#readme"
+}
