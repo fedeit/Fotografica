@@ -7,6 +7,7 @@ app.use(express.static(path.join(__dirname, 'photos_dir')));
 
 const database = require('./database_api/database')
 const exif_manager = require('./storage_api/exif_manager')
+const image_tracker = require('./storage_api/image_tracker')
 
 app.get('/photos', (req, res) => {
 	let reqFilters = req.query
@@ -14,7 +15,7 @@ app.get('/photos', (req, res) => {
 		year: reqFilters.year
 	}
 	database.getPhotos(filter, (photos) => {
-		res.send(200, {success: true, result: photos})
+		res.status(200).send( {success: true, result: photos})
 	})
 })
 

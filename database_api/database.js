@@ -1,8 +1,14 @@
+const path = require('path');
 
-let tree = [
-	{id: "Img1", date: '01-01-2019', container: 'main', path: '/abc.jpg'},
-	{id: "Img2", date: '01-01-2020', container: 'main', path: '/def.jpg'}
-]
+let id = 0
+let tree = []
+
+function isSupported(format) {
+	let formats = new Set()
+	formats.add("png")
+	formats.add("jpg")
+	return formats.has(format)
+}
 
 exports.getPhotos = (filter, callback) => {
 	let photos = tree.filter( (image) => {
@@ -17,4 +23,12 @@ exports.getPhotos = (filter, callback) => {
 exports.getPhoto = (id, callback) => {
 	let photo = tree.filter( (image) => image.id === id )[0]
 	callback(photo)
+}
+
+exports.addPhoto = (photo) => {
+	photo.format = path.extname(photo.path).replace('.' ,'')
+	if (isSupported(photo.format)){
+		photo.id = id++
+		tree.push(photo)
+	}
 }
