@@ -12,9 +12,20 @@ const image_tracker = require('./storage_api/image_tracker')
 app.get('/photos', (req, res) => {
 	let reqFilters = req.query
 	let filter = {
-		year: reqFilters.year
+		year: reqFilters.year,
 	}
-	database.getPhotos(filter, (photos) => {
+
+	let qnt = 100
+	let batch = 0
+	if (reqFilters.quantity !== undefined) {
+		qnt = reqFilters.quantity
+	}
+
+	if (reqFilters.batchNumber !== undefined) {
+		batch = reqFilters.batchNumber
+	}
+
+	database.getPhotos(qnt, batch, filter, (photos) => {
 		res.status(200).send( {success: true, result: photos})
 	})
 })
@@ -33,7 +44,13 @@ app.get('/photo', (req, res) => {
 	let photoId = req.query.id
 	if (photoId === undefined) { return res.send(400, {success: false}) }
 	database.getPhoto(photoId, (photo) => {
-		res.status(200).send({success: true, metadata: photo})
+		res.status(200).send({success: true, result: photo})
+	})
+})
+
+app.get('/lastRefresh', (req, res) => {
+	database.getLastRefresh((timestamp) => {
+		res.status(200).send({success: true, result: timestamp})
 	})
 })
 
