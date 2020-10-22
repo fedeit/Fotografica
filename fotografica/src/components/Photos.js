@@ -3,7 +3,8 @@ import { Button, Modal } from 'react-bootstrap';
 import { getPhotos, getPhoto, getLastRefresh, rotateClockwise } from '../api/fotografica_api.js';
 import { url } from '../server_params';
 import { ImageGroup, Image } from 'react-fullscreen-image'
-
+import ImageInfo from './ImageInfo'
+import PhotoMap from './PhotoMap'
 let fontColors = {
 	color: 'rgb(107,118,125)'
 }
@@ -44,12 +45,12 @@ class Photos extends React.Component {
 
 	handleClose() {
 	    document.removeEventListener("keydown", this.playLivePhoto, false);
-		this.setState({ show: false });
+		this.setState({ show: false, showAllMetadata: false });
 	}
 
 	handleShow() {
 	    document.addEventListener("keydown", this.playLivePhoto, false);
-		this.setState({ show: true });
+		this.setState({ show: true, showAllMetadata: false });
 	}
 
 	playLivePhoto(event) {
@@ -77,6 +78,7 @@ class Photos extends React.Component {
 
 	imageOpened(event) {
 		getPhoto(event.target.id, (photo) => {
+			console.log(photo)
 			this.setState({selectedImage: photo});
 		});
 		this.handleShow();
@@ -90,10 +92,14 @@ class Photos extends React.Component {
 		})
 	}
 
+	showAllMetadata() {
+		this.setState({showAllMetadata: true})
+	}
+
 	render() {
 		let htmlPhotos = this.state.photos.map((photo) => {
-			return <div class="justify-content-lg-center col-lg-2 item zoom-on-hover" style={ thumbnailStyle }>
-				<img id={ photo.id } onClick={ this.imageOpened } class="img-fluid image" style={{width: '100%', height: '100%', objectFit: 'cover'}} src={url + photo.thumbPath + '?hash=' + this.state.imageHash} />
+			return <div key={"div" + photo.id} class="justify-content-lg-center col-lg-2 item zoom-on-hover" style={ thumbnailStyle }>
+				<img key={"photo" + photo.id} id={ photo.id } onClick={ this.imageOpened } class="img-fluid image" style={{width: '100%', height: '100%', objectFit: 'cover'}} src={url + photo.thumbPath + '?hash=' + this.state.imageHash} />
 			</div>
 		})
 
@@ -113,16 +119,17 @@ class Photos extends React.Component {
 				                    : <img src={url + this.state.selectedImage.path + '?hash=' + this.state.imageHash } style={{width: '100%'}} />
 
 				                }
-								
 	                        </div>
 	                        <div class="col" style={{width: '25%'}}>
+	                        	<ImageInfo photo={ this.state.selectedImage } showAllMetadata={ this.state.showAllMetadata }/>
 	                            <div class="row"><div class="col"><Button onClick={ this.askRotateClockwise.bind(this) } variant="primary" type="Button">Rotate 90deg clockwise</Button></div></div>
 	                            <div class="row"><div class="col"><Button variant="primary" type="Button">Crop Image</Button></div></div>
-	                            <div class="row"><div class="col"><Button variant="primary" type="Button">Modify Metadata</Button></div></div>
+	                            <div class="row"><div class="col"><Button variant="primary" type="Button" onClick={ this.showAllMetadata.bind(this) }>See all metadata</Button></div></div>
 	                            <div class="row"><div class="col"><Button variant="primary" type="Button">Tag People</Button></div></div>
 	                            <div class="row"><div class="col"><Button variant="primary" type="Button">Set Location</Button></div></div>
 	                        </div>
 	                    </div>
+						<PhotoMap metadata={ this.state.selectedImage.metadata }/>
 	                </Modal.Body>
 	                <Modal.Footer style={ bgColor }>
 	                    <Button variant="light"><img src="https://img.icons8.com/ios-filled/20/000000/full-trash.png" /></Button>
