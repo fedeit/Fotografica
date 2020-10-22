@@ -1,8 +1,13 @@
-const fs = require('fs');
-const path = require('path');
+import {convert} from "easyimage";
 
-const ei = require("easyimage");
-
-exports.convertImage = async (oldPath, newPath) => {
-	// let newFileName = path.dirname(newPath) + "/" + path.basename(newPath, path.extname(newPath)) + ".jpeg"
+// Function to convert files from HEIC/HEIF to JPG
+exports.convert = async (oldPath, newPath) => {
+	try {
+	    await convert({
+	        src: oldPath,
+	        dst: newPath,
+	    });
+	} catch (e) {
+	    console.log("Error: ", e);
+	}
 };

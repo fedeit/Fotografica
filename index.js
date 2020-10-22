@@ -7,6 +7,7 @@ app.use(express.static(path.join(__dirname, 'photos_dir')));
 
 const database = require('./database_api/database')
 const exif_manager = require('./storage_api/exif_manager')
+const photo_manager = require('./database_api/photo_manager')
 const image_tracker = require('./storage_api/image_tracker')
 
 app.get('/photos', (req, res) => {
@@ -51,6 +52,14 @@ app.get('/photo', (req, res) => {
 app.get('/lastRefresh', (req, res) => {
 	database.getLastRefresh((timestamp) => {
 		res.status(200).send({success: true, result: timestamp})
+	})
+})
+
+app.get('/rotateClockwise', (req, res) => {
+	let photoId = req.query.id
+	if (photoId === undefined) { return res.send(400, {success: false}) }
+	photo_manager.rotateClockwise(photoId, () => {
+		res.status(200).send({success: true})
 	})
 })
 

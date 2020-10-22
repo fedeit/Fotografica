@@ -1,12 +1,8 @@
-const exiftool = require('node-exiftool')
-const exiftoolBin = require('dist-exiftool')
+const im = require("imagemagick"); 
+const util = require('util')
 
-const ep = new exiftool.ExiftoolProcess(exiftoolBin)
-
-exports.getEXIF = (path, callback) => {
-	// ep.open()
-	// .then(() => ep.readMetadata(path, ['-File:all']))
-	// .then(callback)
-	// .then(() => ep.close())
-	// .catch(console.error)
-}
+exports.getEXIF = async (imgPath) => {
+	const readMetadataPromise = util.promisify(im.readMetadata)
+	let meta = await readMetadataPromise(imgPath)
+	return meta.exif
+};

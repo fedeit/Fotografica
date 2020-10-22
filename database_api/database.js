@@ -1,56 +1,52 @@
-import { JsonDB } from 'node-json-db';
-import { Config } from 'node-json-db/dist/lib/JsonDBConfig'
+const params = require('../fotografica_params');
+const nano = require('nano')('http://admin:admin@localhost:5984');
 
-var db = new JsonDB(new Config("FotograficaDB", true, true, '/'));
-// Check if there is a starting ID in the db, otherwise initialize it
-try { 
-	console.log("Start ID DB is " + db.getData("/settings/lastID"))
-} catch {
-	db.push("/settings/lastID", -1)
-}
-// Get last db photo refresh
-try { 
-	console.log("Last refresh was " + db.getData("/lastRefresh"))
-} catch {
-	let now = new Date().toISOString()
-	db.push('/lastRefresh', now)
-}
+let photos = nano.use(params.photosDBName);
 
+// Get last db photo refresh timestamp
+let lastRefreshVar = new Date().toISOString()
+
+// Function to get the id and paths of the photos
 exports.getPhotos = (quantity, batch, filter, callback) => {
-	let data = db.getData("/photos")
-	let photos = data.filter( (image) => {
-		if (filter.year !== undefined) {
-			return image.date.includes(filter.year)
-		}
-		return image
+	const query = {
+		include_docs: true,
+		fields: [ "path", "_id" ],
+		limit: quantity
+	}
+	photos.list(query).then((body) => {
+		let res = body.rows.map((doc) => {
+			return {id: doc.doc._id, thumbPath: doc.doc.thumbPath}
+	  	});
+	  	res.sort((a, b) => {
+	  		return new Date.parse(a.metadata.dateTime) - new Date.parse(b.metadata.dateTime)
+	  	})
+		callback(res)
 	});
-	callback(photos.slice(0, 20))
 }
 
 exports.getPhoto = (id, callback) => {
-	let photo = db.getData("/photos/" + id)
-	callback(photo)
+	photos.get(id)
+	.then((body) => {
+		callback(body)
+	})
+	.catch((err) => {
+		console.log(err)
+	})
 }
 
-exports.hasImage = (path) => {
-	return true
-	try {
-		let img = db.getIndex("/photos[]/id", path, "originalPath")
-		if (img == -1) {
-			return false
+exports.hasImage = async (path) => {
+	const query = {
+		selector: {
+			originalPath: {'$eq' : path} 
 		}
-		return true
-	} catch (err) {
-		return false
 	}
+	let doc = await photos.find(query)
+	return doc.docs.length != 0
 }
 
-exports.addPhoto = (photo) => {
-	let id = db.getData("/settings/lastID")
-	photo.id = ++id
-	db.push("/photos[]/", photo, true)
-	db.push("/settings/lastID", photo.id)
-	db.push("/lastRefresh", Date.now())
+exports.addPhoto = async (photo) => {
+	let response = await photos.insert(photo)
+	lastRefreshVar = new Date().toISOString()
 }
 
 exports.setMetadataFor = (meta, id) => {
@@ -58,5 +54,5 @@ exports.setMetadataFor = (meta, id) => {
 }
 
 exports.getLastRefresh = (callback) => {
-	callback(db.getData("/lastRefresh"))
+	callback(lastRefreshVar)
 }
