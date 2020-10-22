@@ -1,17 +1,17 @@
 # Fotografica
 A photomanager platform based on React, NodeJS and CouchDB. The platform runs a minimalistic frontend UI built in Bootstrap, runs fully locally (excluding CDNs), and uses a backend API server in NodeJS.
 The NodeJS server runs:
-- Directory discovery, reads a target directory defined in the "fotografica_params.js" file. Looks for png, jpg, jpeg files, and converts HEIC and HEIF files while maintaining the original files.
+- Directory discovery, reads a target directory defined in the "fotografica_params.js" file. Looks for png, jpg, jpeg files, and converts HEIC and HEIF files while maintaining the original files
 - Creates small and lower quality .jpg thumbnails in the /thumbnails directory
 - Places all converted images in the /converted directory
 - Computes the EXIF data of the picture
 - Looks for the corresponding photoname.MOV or photoname_HEVC.MOV Apple Live Photo of a discovered photo
 - Adds to the database the path of the original image file, thumbnail, and converted image (if applicable), the EXIF metadata of the photo, the path to the Live Photo (if applicable) and the file creation timestamp
-- Shows on the frontend a Google Map of the place where the photo was shot.
+- Gets the EXIF coordinates to show on the frontend a Google Map of the place where the photo was shot
 
 ## Key Features
-- Supports the iPhone's HEIC/HEIF photo format.
-- Supports Apple Live Photos. The user can play a Live Photo by simply pressing the spacebar once opened an image in the frontend.
+- Supports the iPhone's HEIC/HEIF photo format
+- Supports Apple Live Photos. The user can play a Live Photo by simply pressing the spacebar once opened an image in the frontend
 - Simple setup
 - Supports large databases
 
