@@ -20,6 +20,7 @@
   "dependencies": {
     "@tensorflow/tfjs-node": "^2.6.0",
     "canvas": "^2.6.1",
+    "cli-progress": "^3.8.2",
     "dist-exiftool": "^10.53.0",
     "easyimage": "^3.1.1",
     "esm": "^3.2.25",

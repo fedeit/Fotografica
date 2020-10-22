@@ -4,6 +4,7 @@ const photo_manager = require('../database_api/photo_manager')
 const params = require('../fotografica_params')
 const absolute_path = params.photoLibraryPath
 const db = require('../database_api/database.js')
+const cliProgress = require('cli-progress');
 
 
 let discovered = []
@@ -49,9 +50,13 @@ var discoverAllImages = function(dir, done) {
 console.log("Parsing originals");
 discoverAllImages(absolute_path, async (err) => {
   console.log("Done parsing! ");
-  for (var i = discovered.length - 1; i >= 0; i--) {
+  const progress = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+  progress.start(discovered.length, 0);
+  for (var i = 0; i < discovered.length; i++) {
+    progress.update(i);
     // For each path, add photo to photomanager 
     let success = await photo_manager.addPhoto({originalPath: discovered[i], container: 'main'})
   }
+  progress.stop()
   console.log("Done with library assembly!")
 });
