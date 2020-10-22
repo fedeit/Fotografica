@@ -35,7 +35,7 @@ function hasLivePhoto(photoPath, filename) {
 // Add a photo to the system
 exports.addPhoto = async (photo) => {
 	try {
-		console.log("Computing " + photo.originalPath)
+		// console.log("Computing " + photo.originalPath)
 		// Check if db has image
 	    let hasImage = await db.hasImage(photo.originalPath)
 	    if (hasImage){
@@ -62,6 +62,8 @@ exports.addPhoto = async (photo) => {
 		// Make a thumbnail for the image
 		photo.thumbPath = "/thumbnails" + photo.path
 		makeThumbnail(absolute_path + photo.path, absolute_path + photo.thumbPath)
+		// Get time when photo was created
+		photo.fileTimestamp = createdDate(absolute_path + photo.originalPath)
 		// Save the photo to the server
 		await db.addPhoto(photo)
 		return await Promise.resolve(true);
@@ -70,6 +72,13 @@ exports.addPhoto = async (photo) => {
 		return await Promise.resolve(false);
 	}
 }
+
+function createdDate (file) {  
+  const { birthtime } = Fs.statSync(file)
+
+  return birthtime
+}
+
 
 function makeThumbnail(imgPath, toPath) {
 	fs.mkdirSync(path.dirname(toPath), { recursive: true })

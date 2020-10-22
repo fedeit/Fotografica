@@ -1,5 +1,6 @@
+require('dotenv').config()
 const params = require('../fotografica_params');
-const nano = require('nano')('http://admin:admin@localhost:5984');
+const nano = require('nano')( process.env.DB_PROTOCOL + '://' + process.env.DB_USER + ':' + process.env.DB_PASS + '@' + process.env.DB_HOST);
 
 let photos = nano.use(params.photosDBName);
 
@@ -18,7 +19,10 @@ exports.getPhotos = (quantity, batch, filter, callback) => {
 			return {id: doc.doc._id, thumbPath: doc.doc.thumbPath}
 	  	});
 	  	res.sort((a, b) => {
-	  		return new Date.parse(a.metadata.dateTime) - new Date.parse(b.metadata.dateTime)
+	  		if (a.metadata !== undefined && b.metadata !== undefined && a.metadata.dateTime !== undefined && b.metadata.dateTime !== undefined) {
+		  		return new Date.parse(a.metadata.dateTime) - new Date.parse(b.metadata.dateTime)
+	  		}
+	  		return false
 	  	})
 		callback(res)
 	});
