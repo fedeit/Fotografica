@@ -11,6 +11,7 @@ import './App.css';
 import Photos from './components/Photos'
 import Navbar from './components/Navbar'
 import Albums from './components/Albums'
+import MapWithMarkerClusterer from './components/AggregatePhotosMap'
 
 function App() {
   return (
@@ -23,6 +24,9 @@ function App() {
             </Route>
             <Route path="/albums">
               <Albums/>
+            </Route>
+            <Route path="/map">
+              <MapWithMarkerClusterer />
             </Route>
           </Router>
           <script src="assets/js/jquery.min.js"></script>
