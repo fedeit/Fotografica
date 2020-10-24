@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PhotoMap from './PhotoMap'
 import { getAllCoordinates } from '../api/fotografica_api'
+
 class PhotosGoogleMaps extends React.Component {
 	constructor(props) {
 		super(props)
@@ -16,3 +17,5 @@ class PhotosGoogleMaps extends React.Component {
 		)
 	}
 }
+
+export default PhotosGoogleMaps
