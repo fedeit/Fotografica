@@ -20,13 +20,13 @@ class Navbar extends Component {
 		           		<Link to="/photos" style={buttonStyle}>Photos</Link>
 	           		</li>
 		            <li class="nav-item d-lg-flex justify-content-lg-center">
+		            	<img src="https://img.icons8.com/color/48/000000/world-map-continents.png" height={ height40 } />
+		           		<Link to="/map" style={buttonStyle}>Map</Link>
+	           		</li>
+		            <li class="nav-item d-lg-flex justify-content-lg-center">
 		            	<img src="https://img.icons8.com/color/48/000000/collage.png" height={ height40 } />
 		            	<Link to="/albums" style={buttonStyle}>Albums</Link>
 	            	</li>
-		            <li class="nav-item d-lg-flex justify-content-lg-center">
-			            <img src="https://img.icons8.com/color/48/000000/collage.png" height={ height40 } />
-			            <Link to="/libraries" style={buttonStyle}>Libraries</Link>
-		            </li>
 		            <li class="nav-item d-lg-flex justify-content-lg-center" height={ height40 }>
 		            	<img src="https://img.icons8.com/color/48/000000/search-more.png" height={ height40 } />
 		            	<Link to="/search" style={buttonStyle}>Search</Link>

@@ -46,17 +46,20 @@ var discoverAllImages = function(dir, done) {
 };
 
 
-// Auto discover lib on startuo
-console.log("Parsing originals");
-discoverAllImages(absolute_path, async (err) => {
-  console.log("Done parsing! ");
-  const progress = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
-  progress.start(discovered.length, 0);
-  for (var i = 0; i < discovered.length; i++) {
-    progress.update(i);
-    // For each path, add photo to photomanager 
-    let success = await photo_manager.addPhoto({originalPath: discovered[i], container: 'main'})
-  }
-  progress.stop()
-  console.log("Done with library assembly!")
-});
+exports.autoDiscover = () => {
+  // Auto discover lib
+  console.log("Parsing originals");
+  discoverAllImages(absolute_path, async (err) => {
+    console.log("Done parsing! ");
+    const progress = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+    progress.start(discovered.length, 0);
+    for (var i = 0; i < discovered.length; i++) {
+      progress.update(i);
+      // For each path, add photo to photomanager 
+      let success = await photo_manager.addPhoto({originalPath: discovered[i], container: 'main'})
+    }
+    progress.stop()
+    console.log("Done with library assembly!")
+    params.isNewSetup = false
+  });
+}

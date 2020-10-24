@@ -6,14 +6,20 @@ class PhotosGoogleMaps extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = { positions: [] }
+	}
+
+	componentWillMount() {
 		getAllCoordinates((list) => {
-			this.setState({ positions: list })
+			let coordinates = list.map((el) => {
+				return el.coordinates
+			})
+			this.setState({ positions: coordinates })
 		})
 	}
 
 	render() {
 		return (
-			<PhotoMap markersType="cluster" positions={ this.state.positions }>
+			<PhotoMap markersType="cluster" coordinatesList={ this.state.positions } />
 		)
 	}
 }

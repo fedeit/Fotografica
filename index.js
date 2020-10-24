@@ -11,6 +11,13 @@ const exif_manager = require('./storage_api/exif_manager')
 const photo_manager = require('./database_api/photo_manager')
 const image_tracker = require('./storage_api/image_tracker')
 
+// Startup sequence
+database.verify((isSetup) => {
+	if (isSetup) {
+		image_tracker.autoDiscover()
+	}
+})
+
 app.get('/photos', (req, res) => {
 	let reqFilters = req.query
 	let filter = {

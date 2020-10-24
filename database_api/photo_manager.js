@@ -45,8 +45,8 @@ function hasLivePhoto(photoPath, filename) {
 			}
 		}
 		return undefined
-	} catch {
-		console.log("Error finding live photo")
+	} catch (err) {
+		console.log("Error finding live photo" + err)
 		return undefined
 	}
 }
@@ -79,9 +79,11 @@ exports.addPhoto = async (photo) => {
 		// Get exif info of the photo
 		photo.metadata = await exif_manager.getEXIF(absolute_path + photo.originalPath)
 		// Convert GPS Coordinates to formatted string
-  	    let lat = parseCoordinate(photo.metadata.gpsLatitude, photo.metadata.gpsLatitudeRef)
-      	let lng = parseCoordinate(photo.metadata.gpsLongitude, photo.metadata.gpsLongitudeRef)
-		photo.coordinates = { lat: lat, lng: lng }
+		if (photo.metadata !== undefined && photo.metadata.gpsLatitude !== undefined) {
+	  	    let lat = parseCoordinate(photo.metadata.gpsLatitude, photo.metadata.gpsLatitudeRef)
+	      	let lng = parseCoordinate(photo.metadata.gpsLongitude, photo.metadata.gpsLongitudeRef)
+			photo.coordinates = { lat: lat, lng: lng }
+		}
 		// Make a thumbnail for the image
 		photo.thumbPath = "/thumbnails" + photo.path
 		makeThumbnail(absolute_path + photo.path, absolute_path + photo.thumbPath)
@@ -97,7 +99,7 @@ exports.addPhoto = async (photo) => {
 }
 
 function createdDate (file) {  
-  const { birthtime } = Fs.statSync(file)
+  const { birthtime } = fs.statSync(file)
 
   return birthtime
 }

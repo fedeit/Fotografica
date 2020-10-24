@@ -2,7 +2,31 @@ require('dotenv').config()
 const params = require('../fotografica_params');
 const nano = require('nano')( process.env.DB_PROTOCOL + '://' + process.env.DB_USER + ':' + process.env.DB_PASS + '@' + process.env.DB_HOST);
 
-let photos = nano.use(params.photosDBName);
+// Specify db for photos
+let photos;
+
+exports.verify = (completion) => {
+	nano.db.list().then((body) => {
+		if (body.includes(params.photosDBName)) {
+			console.log("Database " + params.photosDBName + " exists")
+			photos = nano.use(params.photosDBName);
+			completion(true)
+		} else {
+			nano.db.create(params.photosDBName).then((body) => {
+				console.log("Database " + params.photosDBName + " created! ");
+				params.isNewSetup = true
+				photos = nano.use(params.photosDBName);
+				completion(true)
+			}).catch((err) => {
+				console.log(err)
+				completion(false)
+			})
+		}
+	}).catch((err) => {
+		console.log(err)
+		completion(false)
+	})
+}
 
 // Get last db photo refresh timestamp
 let lastRefreshVar = new Date().toISOString()
@@ -38,13 +62,17 @@ exports.getPhoto = (id, callback) => {
 	})
 }
 
-exports.getAllCoordinates = () => {
+exports.getAllCoordinates = (callback) => {
 	const query = {
 		include_docs: true,
 		fields: [ "coordinates", "_id" ]
 	}
 	photos.list(query).then((body) => {
-		let res = body.rows.map((doc) => {
+		let res = body.rows
+		.filter((doc) => {
+			return doc.doc.coordinates !== undefined
+	  	})
+		.map((doc) => {
 			return {id: doc.doc._id, coordinates: doc.doc.coordinates}
 	  	});
 		callback(res)
@@ -52,6 +80,9 @@ exports.getAllCoordinates = () => {
 }
 
 exports.hasImage = async (path) => {
+	if (params.isNewSetup) {
+		return false
+	}
 	const query = {
 		selector: {
 			originalPath: {'$eq' : path} 
