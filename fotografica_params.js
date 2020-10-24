@@ -6,6 +6,8 @@ export let photosDBName = "fotografica_photos"
 let toConvertFormats = new Set(['heic', 'heif'])
 // Formats that are natively supported
 let supportedFormats = new Set(['png', 'jpg', 'jpeg'])
+// Candidates paths for the live photos
+let candidatePaths = [	"_HEVC.MOV", ".mov" ]
 
 // Helper functions to check if format is supported or needs conversion
 export function isSupported(format) {

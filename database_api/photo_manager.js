@@ -8,8 +8,27 @@ const db = require('./database.js')
 const img_converter = require('../storage_api/image_converter')
 const exif_manager = require('../storage_api/exif_manager')
 
-// Candidates paths for the live photos
-let candidatePaths = [	"_HEVC.MOV", ".mov" ]
+function exifNumStrToFloat(strNum) {
+  let fraction = strNum.split("/")
+  return parseInt(fraction[0]) / parseInt(fraction[1])
+}
+
+function parseCoordinate(coordinateString, direction) {
+  let parts = coordinateString.split(", ")
+  let values = []
+  parts.forEach((part) => {
+    values.push(exifNumStrToFloat(part))
+  })
+  return ConvertDMSToDD(values[0], values[1], values[2], direction)
+}
+
+function ConvertDMSToDD(degrees, minutes, seconds, direction) {
+    var dd = degrees + minutes/60 + seconds/(60*60);
+    if (direction === "S" || direction === "W") {
+        dd = dd * -1;
+    } // Don't do anything for N or E
+    return dd;
+}
 
 // Function to check if there is a live photo for a specific image based on defines standard filepaths
 function hasLivePhoto(photoPath, filename) {
@@ -19,8 +38,8 @@ function hasLivePhoto(photoPath, filename) {
 	let filenameNoExtension = path.basename(filename, path.extname(filename))
 	try {
 		// Check if any of the candidate filepaths are valid
-		for (var i = candidatePaths.length - 1; i >= 0; i--) {
-			let current = enclosingFolder + "/" + filenameNoExtension + candidatePaths[i]
+		for (var i = params.candidatePaths.length - 1; i >= 0; i--) {
+			let current = enclosingFolder + "/" + filenameNoExtension + params.candidatePaths[i]
 			if (fs.existsSync(current)) {
 				return current.replace(absolute_path, '')
 			}
@@ -59,6 +78,10 @@ exports.addPhoto = async (photo) => {
 		photo.livePhotoPath = hasLivePhoto(absolute_path + photo.originalPath, photo.filename)
 		// Get exif info of the photo
 		photo.metadata = await exif_manager.getEXIF(absolute_path + photo.originalPath)
+		// Convert GPS Coordinates to formatted string
+  	    let lat = parseCoordinate(photo.metadata.gpsLatitude, photo.metadata.gpsLatitudeRef)
+      	let lng = parseCoordinate(photo.metadata.gpsLongitude, photo.metadata.gpsLongitudeRef)
+		photo.coordinates = { lat: lat, lng: lng }
 		// Make a thumbnail for the image
 		photo.thumbPath = "/thumbnails" + photo.path
 		makeThumbnail(absolute_path + photo.path, absolute_path + photo.thumbPath)
