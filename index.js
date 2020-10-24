@@ -56,6 +56,12 @@ app.get('/lastRefresh', (req, res) => {
 	})
 })
 
+app.get('/allCoordinates', (req, res) => {
+	database.getAllCoordinates((coordinatesList) => {
+		res.status(200).send({success: true, result: coordinatesList})
+	})
+})
+
 app.get('/rotateClockwise', (req, res) => {
 	let photoId = req.query.id
 	if (photoId === undefined) { return res.send(400, {success: false}) }

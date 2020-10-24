@@ -38,6 +38,19 @@ exports.getPhoto = (id, callback) => {
 	})
 }
 
+exports.getAllCoordinates = () => {
+	const query = {
+		include_docs: true,
+		fields: [ "coordinates", "_id" ]
+	}
+	photos.list(query).then((body) => {
+		let res = body.rows.map((doc) => {
+			return {id: doc.doc._id, coordinates: doc.doc.coordinates}
+	  	});
+		callback(res)
+	});
+}
+
 exports.hasImage = async (path) => {
 	const query = {
 		selector: {
