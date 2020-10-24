@@ -129,7 +129,7 @@ class Photos extends React.Component {
 	                            <div class="row"><div class="col"><Button variant="primary" type="Button">Set Location</Button></div></div>
 	                        </div>
 	                    </div>
-						<PhotoMap metadata={ this.state.selectedImage.metadata }/>
+						<PhotoMap markersType="single" coordinates={ this.state.selectedImage.coordinates }/>
 	                </Modal.Body>
 	                <Modal.Footer style={ bgColor }>
 	                    <Button variant="light"><img src="https://img.icons8.com/ios-filled/20/000000/full-trash.png" /></Button>
