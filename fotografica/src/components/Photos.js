@@ -50,7 +50,6 @@ class Photos extends React.Component {
 	}
 
 	imageOpened(event) {
-		console.log("Image clicked!")
 		let imgId = event.target.id
 		this.setState( { show: true, selectedImage: imgId } )
 	}
