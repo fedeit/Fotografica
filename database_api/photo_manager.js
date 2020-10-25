@@ -110,6 +110,7 @@ function makeThumbnail(imgPath, toPath) {
 	sharp(imgPath)
 	.jpeg({ quality: 70 })
 	.resize(200, 200)
+	.withMetadata()
 	.toFile(toPath, (err, resizeImage) => {
          if (err) {
               console.log(imgPath + " Error making thumbnail! " + toPath + " " + err);
