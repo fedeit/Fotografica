@@ -14,6 +14,7 @@ const options = {
   imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
 }
 
+let map;
 
 export class PhotoMap extends Component {
   constructor(props) {
@@ -23,6 +24,7 @@ export class PhotoMap extends Component {
     this.state = ( computedState !== undefined ) ? computedState : {}
     // Add markers type to state
     this.state.markersType = props?.markersType
+    this.state.center = { lat: 0, lng: 0 }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -60,6 +62,17 @@ export class PhotoMap extends Component {
     this.setState({ selectedImage: photo.vb.target.title })
   }
 
+  handleCenterChange() {
+    if (map !== undefined) {
+      let currentCenter = map.getCenter()
+      this.state.center = { lat: currentCenter.lat(), lng: currentCenter.lng() }
+    }
+  }
+
+  setMap(mapInstance) {
+    map = mapInstance
+  }
+
   render() {
     if (this.state === undefined) {
       return <div></div>
@@ -77,7 +90,7 @@ export class PhotoMap extends Component {
       return (
         <div>
           <PhotoModal selectedImage={ this.state.selectedImage }/>
-            <GoogleMap mapContainerStyle={ mapContainerStyle } zoom={ 1 } center={ { lat: 0, lng: 0 } }>
+            <GoogleMap mapContainerStyle={ mapContainerStyle } zoom={ 2 } onLoad={ this.setMap.bind(this) } onCenterChanged={ this.handleCenterChange.bind(this) } center={ this.state.center }>
               <MarkerClusterer options={ options } onClick={ this.clusterClicked.bind(this) }>
                 {(clusterer) =>
                   this.state.positions.map((location) => (
