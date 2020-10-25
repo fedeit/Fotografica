@@ -109,8 +109,8 @@ function makeThumbnail(imgPath, toPath) {
 	fs.mkdirSync(path.dirname(toPath), { recursive: true })
 	sharp(imgPath)
 	.jpeg({ quality: 70 })
+	.rotate()
 	.resize(200, 200)
-	.withMetadata()
 	.toFile(toPath, (err, resizeImage) => {
          if (err) {
               console.log(imgPath + " Error making thumbnail! " + toPath + " " + err);
