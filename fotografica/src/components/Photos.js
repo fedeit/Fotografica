@@ -1,8 +1,8 @@
 import  React from 'react';
-import { url } from '../server_params';
 import { ImageGroup, Image } from 'react-fullscreen-image'
 import PhotoModal from './PhotoModal'
 import { getPhotos, getPhoto, getLastRefresh, rotateClockwise } from '../api/fotografica_api.js';
+let url = process.env.REACT_APP_SERVER_URL
 
 let fontColors = {
 	color: 'rgb(107,118,125)'

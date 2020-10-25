@@ -3,7 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 import { getPhoto, rotateClockwise } from '../api/fotografica_api.js';
 import ImageInfo from './ImageInfo'
 import PhotoMap from './PhotoMap'
-import { url } from '../server_params';
+let url = process.env.REACT_APP_SERVER_URL
 
 let bgColor = {
 	background: '#716b6b'

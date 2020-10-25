@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { url } from '../server_params';
+let url = process.env.REACT_APP_SERVER_URL
 
 export let getPhotos = (quantity, batchNumber, completion) => {
     axios.get(url + '/photos', {quantity: quantity, batchNumber: batchNumber})
