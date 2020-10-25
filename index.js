@@ -5,6 +5,7 @@ const app = express()
 const port = 80
 
 app.use(express.static(path.join(__dirname, 'photos_dir')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const database = require('./database_api/database')
 const exif_manager = require('./storage_api/exif_manager')
