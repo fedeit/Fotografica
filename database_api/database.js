@@ -66,7 +66,7 @@ exports.getPhoto = (id, callback) => {
 exports.getAllCoordinates = (callback) => {
 	const query = {
 		include_docs: true,
-		fields: [ "coordinates", "_id", "thumbPath"]
+		fields: [ "coordinates", "_id", "thumbPath", "fileTimestamp"]
 	}
 	photos.list(query).then((body) => {
 		let res = body.rows
@@ -74,7 +74,7 @@ exports.getAllCoordinates = (callback) => {
 			return doc.doc.coordinates !== undefined
 	  	})
 		.map((doc) => {
-			return {id: doc.doc._id, coordinates: doc.doc.coordinates, thumbPath: doc.doc.thumbPath}
+			return {id: doc.doc._id, coordinates: doc.doc.coordinates, thumbPath: doc.doc.thumbPath, fileTimestamp: doc.doc.fileTimestamp}
 	  	});
 		callback(res)
 	});

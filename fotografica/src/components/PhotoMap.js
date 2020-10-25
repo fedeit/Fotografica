@@ -53,7 +53,7 @@ export class PhotoMap extends Component {
 
   clusterClicked(cluster) {
     let images = cluster.markers.map((img) => {
-      return { id: img.id, thumbPath: img.thumbPath }
+      return { id: img.id, thumbPath: img.thumbPath, fileTimestamp: img.fileTimestamp }
     })
     this.setState({ selectedImage: "", selectedCluster: images})
   }
@@ -96,7 +96,7 @@ export class PhotoMap extends Component {
                   this.state.positions.map((location) => (
                     <Marker key={ location.id }
                             title={ location.id }
-                            options={ { id: location.id, thumbPath: location.thumbPath } }
+                            options={ { id: location.id, thumbPath: location.thumbPath, fileTimestamp: location.fileTimestamp } }
                             onClick={ this.photoClicked.bind(this) }
                             position={ { lat: location.coordinates.lat, lng: location.coordinates.lng} }
                             clusterer={ clusterer } />
