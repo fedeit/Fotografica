@@ -54,7 +54,6 @@ class PhotoModal extends Component {
 
 	imageOpened(id) {
 		getPhoto(id, (photo) => {
-			console.log(photo)
 			this.setState({selectedImage: photo});
 		});
 	}

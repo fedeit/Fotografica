@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import { GoogleMap, LoadScript, MarkerClusterer, Marker } from '@react-google-maps/api'
 import PhotoModal from './PhotoModal'
-
-// Get API Key for Google Maps
-const apiKey = process.env.REACT_APP_GOOGLE_API_KEY
+import Photos from './Photos'
 
 const mapContainerStyle = {
   height: '500px',
@@ -12,6 +10,7 @@ const mapContainerStyle = {
 
 const options = {
   zoomOnClick: false,
+  disableAutoPan: true,
   imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
 }
 
@@ -51,7 +50,10 @@ export class PhotoMap extends Component {
   }
 
   clusterClicked(cluster) {
-    console.log(cluster.markers)
+    let images = cluster.markers.map((img) => {
+      return { id: img.id, thumbPath: img.thumbPath }
+    })
+    this.setState({ selectedCluster: images})
   }
 
   photoClicked(photo) {
@@ -64,11 +66,9 @@ export class PhotoMap extends Component {
     }
     if (this.state.markersType == "single") {
       return (
-        <LoadScript googleMapsApiKey={ apiKey }>
           <GoogleMap mapContainerStyle={ mapContainerStyle } zoom={ 10 } center={ this.state.position }>
             <Marker position={ this.state.position } />
           </GoogleMap>
-        </LoadScript>
       )
     } else if (this.state.markersType == "cluster") {
       if (this.state.positions === undefined) {
@@ -77,17 +77,21 @@ export class PhotoMap extends Component {
       return (
         <div>
           <PhotoModal selectedImage={ this.state.selectedImage }/>
-          <LoadScript googleMapsApiKey={ apiKey }>
             <GoogleMap mapContainerStyle={ mapContainerStyle } zoom={ 1 } center={ { lat: 0, lng: 0 } }>
               <MarkerClusterer options={ options } onClick={ this.clusterClicked.bind(this) }>
                 {(clusterer) =>
                   this.state.positions.map((location) => (
-                    <Marker key={ location.id } onClick={ this.photoClicked.bind(this) } position={ { lat: location.coordinates.lat, lng: location.coordinates.lng} } title={ location.id } clusterer={ clusterer } />
+                    <Marker key={ location.id }
+                            title={ location.id }
+                            options={ { id: location.id, thumbPath: location.thumbPath } }
+                            onClick={ this.photoClicked.bind(this) }
+                            position={ { lat: location.coordinates.lat, lng: location.coordinates.lng} }
+                            clusterer={ clusterer } />
                   ))
                 }
               </MarkerClusterer>
             </GoogleMap>
-          </LoadScript>
+          <Photos preLoaded={ true } photos={ this.state.selectedCluster }/>
         </div>
       )
     }

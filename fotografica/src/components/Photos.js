@@ -28,26 +28,37 @@ class Photos extends React.Component {
 			photos: [],
 			selectedImage: "",
 			lastRefresh: "Yesterday",
-			imageHash: Date.now()
+			imageHash: Date.now(),
+			preLoaded: (props.preLoaded !== undefined) ? true : false
 		};
 	}
 
 	componentDidMount() {
-		getPhotos(50, batchNumber++, (photos) => {
-			let merged = this.state.photos.concat(photos)
-			this.setState({photos: merged})
-		});
+		if (!this.state.preLoaded) {
+			getPhotos(50, batchNumber++, (photos) => {
+				let merged = this.state.photos.concat(photos)
+				this.setState({photos: merged})
+			});
+		}
 		getLastRefresh((timestamp) => {
 			this.setState({lastRefresh: timestamp})
 		})
 	}
 
+	componentWillReceiveProps(nextProps) {
+		this.setState({ photos: nextProps.photos })
+	}
+
 	imageOpened(event) {
+		console.log("Image clicked!")
 		let imgId = event.target.id
 		this.setState( { show: true, selectedImage: imgId } )
 	}
 
 	render() {
+		if (this.state.photos === undefined) {
+			return <div></div>
+		}
 		let htmlPhotos = this.state.photos.map((photo) => {
 			return <div key={"div" + photo.id} class="justify-content-lg-center col-lg-2 item zoom-on-hover" style={ thumbnailStyle }>
 				<img key={"photo" + photo.id} id={ photo.id } onClick={ this.imageOpened.bind(this) } class="img-fluid image" style={{width: '100%', height: '100%', objectFit: 'cover'}} src={url + photo.thumbPath + '?hash=' + this.state.imageHash} />
