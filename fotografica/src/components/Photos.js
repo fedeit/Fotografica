@@ -89,18 +89,18 @@ class Photos extends React.Component {
 			if (date.getMonth() == prevTimestamp.getMonth()) {
 				prevTimestamp = date
 				htmlPhotosSameMonth.push(<div key={"div" + photo.id} class="justify-content-lg-center col-lg-2 item zoom-on-hover" style={ thumbnailStyle }>
-											<img key={"photo" + photo.id} id={ photo.id } onClick={ this.imageOpened.bind(this) } class="img-fluid image" style={{width: '100%', height: '100%', objectFit: 'cover'}} src={url + photo.thumbPath + '?hash=' + this.state.imageHash} />
+											<img key={"photo" + photo.id} id={ photo.id } onClick={ this.imageOpened.bind(this) } class="img-fluid image" style={{width: '100%', height: '100%', objectFit: 'cover'}} src={url + photo.thumbPath} />
 										</div>)
 			} else {
-				htmlPhotos.push(<div><h3>{ getDateYear(prevTimestamp) }</h3><div class="row no-gutters"> { htmlPhotosSameMonth } </div></div>);
+				htmlPhotos.push(<div key={"wrapper-" + getDateYear(prevTimestamp)}><h3>{ getDateYear(prevTimestamp) }</h3><div key={"photos-" + getDateYear(prevTimestamp)} class="row no-gutters"> { htmlPhotosSameMonth } </div></div>);
 				htmlPhotosSameMonth = []
 				htmlPhotosSameMonth.push(<div key={"div" + photo.id} class="justify-content-lg-center col-lg-2 item zoom-on-hover" style={ thumbnailStyle }>
-											<img key={"photo" + photo.id} id={ photo.id } onClick={ this.imageOpened.bind(this) } class="img-fluid image" style={{width: '100%', height: '100%', objectFit: 'cover'}} src={url + photo.thumbPath + '?hash=' + this.state.imageHash} />
+											<img key={"photo" + photo.id} id={ photo.id } onClick={ this.imageOpened.bind(this) } class="img-fluid image" style={{width: '100%', height: '100%', objectFit: 'cover'}} src={url + photo.thumbPath} />
 										</div>)
 				prevTimestamp = date
 			}
 		})
-		htmlPhotos.push(<div><h3>{ getDateYear(prevTimestamp) }</h3><div class="row no-gutters"> { htmlPhotosSameMonth } </div></div>);
+		htmlPhotos.push(<div key={"wrapper-" + getDateYear(prevTimestamp)}><h3>{ getDateYear(prevTimestamp) }</h3><div key={"photos-" + getDateYear(prevTimestamp)} class="row no-gutters"> { htmlPhotosSameMonth } </div></div>);
 		return 	<div>
 					<PhotoModal selectedImage={ this.state.selectedImage }/>
 			        <section class="portfolio-block photography">
