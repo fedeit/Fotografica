@@ -2,7 +2,7 @@ import axios from 'axios';
 let url = process.env.REACT_APP_SERVER_URL
 
 export let getPhotos = (quantity, batchNumber, completion) => {
-    axios.get(url + '/photos', {quantity: quantity, batchNumber: batchNumber})
+    axios.get(url + '/photos?quantity=' + quantity + "&batchNumber=" + batchNumber, {})
   	.then(res => {
   		const photos = res.data.result;
   		completion(photos)

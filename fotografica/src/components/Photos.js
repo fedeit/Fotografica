@@ -19,10 +19,16 @@ let floatingBarStyle = {
 let thumbnailStyle = {width: '100%', height:'150px', overflow: 'hidden'}
 
 let batchNumber = 0;
+
+function getDateYear(date) {
+	return date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear()
+}
+
 class Photos extends React.Component {
 	constructor(props) {
 		super(props);
-
+		this.trackScrolling = this.trackScrolling.bind(this)
+		this.loadImages = this.loadImages.bind(this)
 		this.state = {
 			show: false,
 			photos: [],
@@ -33,16 +39,33 @@ class Photos extends React.Component {
 		};
 	}
 
-	componentDidMount() {
+	loadImages() {
 		if (!this.state.preLoaded) {
-			getPhotos(50, batchNumber++, (photos) => {
+			getPhotos(50, ++batchNumber, (photos) => {
 				let merged = this.state.photos.concat(photos)
-				this.setState({photos: merged})
+				document.addEventListener('scroll', this.trackScrolling);
+				this.setState({photos: merged, selectedImage: ""})
 			});
 		}
+	}
+
+	componentDidMount() {
+		this.loadImages()
 		getLastRefresh((timestamp) => {
 			this.setState({lastRefresh: timestamp})
 		})
+	}
+
+	componentWillUnmount() {
+	  document.removeEventListener('scroll', this.trackScrolling);
+	}
+
+	trackScrolling() {
+	  const wrappedElement = document.getElementById('libTimestamp');
+	  if (wrappedElement.getBoundingClientRect().bottom <= window.innerHeight) {
+	    this.loadImages();
+	    document.removeEventListener('scroll', this.trackScrolling);
+	  }
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -51,28 +74,40 @@ class Photos extends React.Component {
 
 	imageOpened(event) {
 		let imgId = event.target.id
-		this.setState( { show: true, selectedImage: imgId } )
+		this.setState( { selectedImage: imgId } )
 	}
 
 	render() {
-		if (this.state.photos === undefined) {
+		if (this.state.photos === undefined || this.state.photos.length == 0) {
 			return <div></div>
 		}
-		let htmlPhotos = this.state.photos.map((photo) => {
-			return <div key={"div" + photo.id} class="justify-content-lg-center col-lg-2 item zoom-on-hover" style={ thumbnailStyle }>
-				<img key={"photo" + photo.id} id={ photo.id } onClick={ this.imageOpened.bind(this) } class="img-fluid image" style={{width: '100%', height: '100%', objectFit: 'cover'}} src={url + photo.thumbPath + '?hash=' + this.state.imageHash} />
-			</div>
+		let prevTimestamp = new Date(this.state.photos[0].fileTimestamp);
+		let htmlPhotosSameMonth = []
+		let htmlPhotos = []
+		this.state.photos.forEach((photo) => {
+			let date = new Date(photo.fileTimestamp)
+			if (date.getMonth() == prevTimestamp.getMonth()) {
+				prevTimestamp = date
+				htmlPhotosSameMonth.push(<div key={"div" + photo.id} class="justify-content-lg-center col-lg-2 item zoom-on-hover" style={ thumbnailStyle }>
+											<img key={"photo" + photo.id} id={ photo.id } onClick={ this.imageOpened.bind(this) } class="img-fluid image" style={{width: '100%', height: '100%', objectFit: 'cover'}} src={url + photo.thumbPath + '?hash=' + this.state.imageHash} />
+										</div>)
+			} else {
+				htmlPhotos.push(<div><h3>{ getDateYear(prevTimestamp) }</h3><div class="row no-gutters"> { htmlPhotosSameMonth } </div></div>);
+				htmlPhotosSameMonth = []
+				htmlPhotosSameMonth.push(<div key={"div" + photo.id} class="justify-content-lg-center col-lg-2 item zoom-on-hover" style={ thumbnailStyle }>
+											<img key={"photo" + photo.id} id={ photo.id } onClick={ this.imageOpened.bind(this) } class="img-fluid image" style={{width: '100%', height: '100%', objectFit: 'cover'}} src={url + photo.thumbPath + '?hash=' + this.state.imageHash} />
+										</div>)
+				prevTimestamp = date
+			}
 		})
-
+		htmlPhotos.push(<div><h3>{ getDateYear(prevTimestamp) }</h3><div class="row no-gutters"> { htmlPhotosSameMonth } </div></div>);
 		return 	<div>
 					<PhotoModal selectedImage={ this.state.selectedImage }/>
 			        <section class="portfolio-block photography">
 			            <div class="container">
+		                	{ htmlPhotos }
 			                <div class="row no-gutters">
-			                	{ htmlPhotos }
-			                </div>
-			                <div class="row no-gutters">
-			                    <div class="col" style={{ height: '300px', background: '#dedede' }}>
+			                    <div id="libTimestamp" class="col" style={{ height: '300px', background: '#dedede' }}>
 			                        <h2 class="text-center" style={{ padding: '10px 0px' }}>You are all set!</h2>
 			                        <h5 class="text-center">Your library is up to date! Last refresh was { this.state.lastRefresh }</h5>
 			                        <div class="d-lg-flex justify-content-lg-center"><img src="https://img.icons8.com/ios/100/000000/easy.png" /></div>

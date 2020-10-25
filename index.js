@@ -25,7 +25,7 @@ app.get('/photos', (req, res) => {
 		year: reqFilters.year,
 	}
 
-	let qnt = 100
+	let qnt = 50
 	let batch = 0
 	if (reqFilters.quantity !== undefined) {
 		qnt = reqFilters.quantity

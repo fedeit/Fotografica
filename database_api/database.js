@@ -35,16 +35,17 @@ let lastRefreshVar = new Date().toISOString()
 exports.getPhotos = (quantity, batch, filter, callback) => {
 	const query = {
 		include_docs: true,
-		fields: [ "path", "_id" ],
-		limit: quantity
+		fields: [ "thumbPath", "_id" ],
+		limit: quantity,
+		skip: quantity * batch
 	}
 	photos.list(query).then((body) => {
 		let res = body.rows.map((doc) => {
-			return {id: doc.doc._id, thumbPath: doc.doc.thumbPath}
+			return {id: doc.doc._id, thumbPath: doc.doc.thumbPath, fileTimestamp: new Date(doc.doc.fileTimestamp)}
 	  	});
 	  	res.sort((a, b) => {
-	  		if (a.metadata !== undefined && b.metadata !== undefined && a.metadata.dateTime !== undefined && b.metadata.dateTime !== undefined) {
-		  		return new Date.parse(a.metadata.dateTime) - new Date.parse(b.metadata.dateTime)
+	  		if (a.fileTimestamp !== undefined && b.fileTimestamp !== undefined) {
+		  		return a.fileTimestamp - b.fileTimestamp
 	  		}
 	  		return false
 	  	})
