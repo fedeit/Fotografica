@@ -10,10 +10,7 @@ class PhotosGoogleMaps extends React.Component {
 
 	componentWillMount() {
 		getAllCoordinates((list) => {
-			let coordinates = list.map((el) => {
-				return el.coordinates
-			})
-			this.setState({ positions: coordinates })
+			this.setState({ positions: list })
 		})
 	}
 

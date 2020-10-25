@@ -13,6 +13,8 @@ import Navbar from './components/Navbar'
 import Albums from './components/Albums'
 import PhotosGoogleMaps from './components/PhotosGoogleMaps'
 
+require('dotenv').config()
+
 function App() {
   return (
     <div className="App">
