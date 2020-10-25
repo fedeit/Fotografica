@@ -26,6 +26,9 @@ function App() {
           <LoadScript googleMapsApiKey={ apiKey }>
             <Router>
               <Navbar />
+              <Route exact path="/">
+                <Photos/>
+              </Route>
               <Route path="/photos">
                 <Photos/>
               </Route>
