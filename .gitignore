@@ -3,3 +3,5 @@ node_modules/
 photos_dir/
 photos_dir_all/
 .env
+public/
+fotografica/build
