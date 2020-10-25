@@ -55,7 +55,7 @@ export class PhotoMap extends Component {
     let images = cluster.markers.map((img) => {
       return { id: img.id, thumbPath: img.thumbPath }
     })
-    this.setState({ selectedCluster: images})
+    this.setState({ selectedImage: "", selectedCluster: images})
   }
 
   photoClicked(photo) {
