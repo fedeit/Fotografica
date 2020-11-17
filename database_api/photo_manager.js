@@ -98,6 +98,43 @@ exports.addPhoto = async (photo) => {
 	}
 }
 
+exports.movePhoto = async (photo_path, destination_folder) => {
+	let photoDatePath = createdDate(photo_path);
+	let filename = path.basename(photo_path);
+	let newPath = destination_folder + photoDatePath + fileName;
+	await move(photo_path, newPath)
+}
+
+async function move(oldPath, newPath) {
+    await fs.rename(oldPath, newPath);
+    // Fallback if error
+    /*
+        if (err) {
+            if (err.code === 'EXDEV') {
+                copy();
+            } else {
+                callback(err);
+            }
+            return;
+        }
+        callback();
+    */
+}
+
+function copy() {
+    var readStream = fs.createReadStream(oldPath);
+    var writeStream = fs.createWriteStream(newPath);
+
+    readStream.on('error', callback);
+    writeStream.on('error', callback);
+
+    readStream.on('close', function () {
+        fs.unlink(oldPath, callback);
+    });
+
+    readStream.pipe(writeStream);
+}
+
 function createdDate (file) {  
   const { birthtime } = fs.statSync(file)
 
