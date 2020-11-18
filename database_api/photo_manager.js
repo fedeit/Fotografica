@@ -99,6 +99,8 @@ exports.addPhoto = async (photo) => {
 }
 
 exports.movePhoto = async (photo_path, destination_folder) => {
+	console.log(photo_path)
+	console.log(destination_folder)
 	let photoDatePath = createdDate(photo_path);
 	let filename = path.basename(photo_path);
 	let newPath = destination_folder + photoDatePath + fileName;
