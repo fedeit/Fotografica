@@ -102,17 +102,24 @@ exports.movePhoto = (photo_path, destination_folder) => {
 	let photoDatePath = createdDate(photo_path, true);
 	let filename = path.basename(photo_path);
 	let newPath = destination_folder + "/" + photoDatePath + "/";
-	move(photo_path, newPath, filename);
-    return newPath + filename
-
+	return move(photo_path, newPath, filename);
 }
 
 function move(oldPath, newPath, filename) {
-	if (!fs.existsSync(newPath)){
+	// Check if folder does not exist
+	if (!fs.existsSync(newPath)) {
+		// Create the folder
     	fs.mkdirSync(newPath, { recursive: true });
 	}
-	// Error management
-    fs.renameSync(oldPath, newPath + filename);
+	// If file does not exist
+	if (!fs.existsSync(newPath + filename)) {
+		// Move the file
+	    fs.renameSync(oldPath, newPath + filename);
+	    return newPath + filename;
+	} else {
+		console.log("\nFile already exists! ", newPath + filename);
+		return undefined;
+	}
 }
 
 function copy() {

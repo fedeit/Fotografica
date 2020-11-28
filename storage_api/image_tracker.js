@@ -60,6 +60,8 @@ exports.autoDiscover = () => {
       progress.update(i);
       // Move picture to the originals lib directory
       let new_path = photo_manager.movePhoto(discovery_folder_path + discovered[i], photo_library_path)
+      // If couldn't move the picture, skip add to library
+      if (new_path === undefined) { continue }
       new_path = new_path.replace(photo_library_path, "")
       // For each path, add photo to photomanager 
       let success = await photo_manager.addPhoto({ originalPath: new_path, container: 'main' })
