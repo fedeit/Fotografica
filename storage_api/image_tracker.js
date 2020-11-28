@@ -3,7 +3,7 @@ const path = require('path')
 const photo_manager = require('../database_api/photo_manager')
 const params = require('../fotografica_params')
 const photo_library_path = params.photoLibraryPath
-const discovery_folder_path = params.photoLibraryPath
+const discovery_folder_path = params.photoDiscoveryPath
 const db = require('../database_api/database.js')
 const cliProgress = require('cli-progress');
 
@@ -59,9 +59,10 @@ exports.autoDiscover = () => {
     for (var i = 0; i < discovered.length; i++) {
       progress.update(i);
       // Move picture to the originals lib directory
-      let new_path = photo_manager.movePhoto(discovered[i], photo_library_path)
+      let new_path = photo_manager.movePhoto(discovery_folder_path + discovered[i], photo_library_path)
+      new_path = new_path.replace(photo_library_path, "")
       // For each path, add photo to photomanager 
-      //let success = await photo_manager.addPhoto({originalPath: new_path, container: 'main'})
+      let success = await photo_manager.addPhoto({ originalPath: new_path, container: 'main' })
     }
     progress.stop()
     console.log("Done with library assembly!")

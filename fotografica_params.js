@@ -1,6 +1,7 @@
 const path = require('path')
 
 export let photoLibraryPath = path.join(__dirname, '/photos_dir')
+export let photoDiscoveryPath = path.join(__dirname, '/photos_dir_discovery')
 export let photosDBName = "fotografica_photos"
 // Formats that need conversion before usage
 let toConvertFormats = new Set(['heic', 'heif'])

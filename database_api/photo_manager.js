@@ -98,29 +98,21 @@ exports.addPhoto = async (photo) => {
 	}
 }
 
-exports.movePhoto = async (photo_path, destination_folder) => {
-	console.log(photo_path)
-	console.log(destination_folder)
-	let photoDatePath = createdDate(photo_path);
+exports.movePhoto = (photo_path, destination_folder) => {
+	let photoDatePath = createdDate(photo_path, true);
 	let filename = path.basename(photo_path);
-	let newPath = destination_folder + photoDatePath + fileName;
-	await move(photo_path, newPath)
+	let newPath = destination_folder + "/" + photoDatePath + "/";
+	move(photo_path, newPath, filename);
+    return newPath + filename
+
 }
 
-async function move(oldPath, newPath) {
-    await fs.rename(oldPath, newPath);
-    // Fallback if error
-    /*
-        if (err) {
-            if (err.code === 'EXDEV') {
-                copy();
-            } else {
-                callback(err);
-            }
-            return;
-        }
-        callback();
-    */
+function move(oldPath, newPath, filename) {
+	if (!fs.existsSync(newPath)){
+    	fs.mkdirSync(newPath, { recursive: true });
+	}
+	// Error management
+    fs.renameSync(oldPath, newPath + filename);
 }
 
 function copy() {
@@ -137,9 +129,21 @@ function copy() {
     readStream.pipe(writeStream);
 }
 
-function createdDate (file) {  
-  const { birthtime } = fs.statSync(file)
 
+function appendLeadingZeroes(n){
+  if(n <= 9){
+    return "0" + n;
+  }
+  return n
+}
+
+function createdDate (file, dirFormat) {  
+  const { birthtime } = fs.statSync(file)
+  if (dirFormat) {
+	let current_datetime = new Date()
+	let formatted_date = current_datetime.getFullYear() + "/" + appendLeadingZeroes(current_datetime.getMonth() + 1) + "/" + appendLeadingZeroes(current_datetime.getDate())
+	return formatted_date
+  }
   return birthtime
 }
 
@@ -168,7 +172,7 @@ exports.rotateClockwise = (id, callback) => {
 				sharp(absolute_path + doc.thumbPath)
 				.rotate(90)
 				.withMetadata()
-			    .toBuffer(function(err, buffer) {
+				.toBuffer(function(err, buffer) {
 					if(err) throw err
 					fs.writeFile(absolute_path + doc.thumbPath, buffer, function() {
 						callback()
