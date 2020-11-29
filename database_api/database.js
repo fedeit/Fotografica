@@ -16,8 +16,9 @@ exports.verify = (completion) => {
 				console.log("Database " + params.photosDBName + " created! ");
 				params.isNewSetup = true
 				photos = nano.use(params.photosDBName);
-				setupViews()
-				completion(true)
+				setupViews((isCompleted) => {
+					completion(isCompleted)
+				})
 			}).catch((err) => {
 				console.log(err)
 				completion(false)
@@ -29,7 +30,7 @@ exports.verify = (completion) => {
 	})
 }
 
-function setupViews() {
+function setupViews(callback) {
 	photos.insert(
 	  	{ "views": 
 	    	{ "untagged": 
@@ -44,6 +45,9 @@ function setupViews() {
 	  	}, '_design/photos', function (error, response) {
 		  	if (error) {
 			    console.log(error);
+			    callback(false)
+			} else {
+				callback(true)
 			}
 		}
 	);
