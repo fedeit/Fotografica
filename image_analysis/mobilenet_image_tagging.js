@@ -6,6 +6,7 @@ const params = require('../fotografica_params.js')
 const cliProgress = require('cli-progress');
 
 exports.autoDBTagging = function() {
+	console.log("Starting db auto tagging using Tensorflow and Mobilenet")
 	// Get all non tagged photos
 	db.getUntaggedPhotos(async (res) => {
 		let photos = res.rows
