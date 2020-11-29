@@ -8,6 +8,6 @@ exports.convert = async (oldPath, newPath) => {
 	        dst: newPath,
 	    });
 	} catch (e) {
-	    console.log("Error: ", e);
+	    console.error("Error: ", e);
 	}
 };

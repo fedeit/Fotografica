@@ -63,6 +63,11 @@ exports.autoDiscover = () => {
       // If couldn't move the picture, skip add to library
       if (new_path === undefined) { continue }
       new_path = new_path.replace(photo_library_path, "")
+      // Check for presence of live photo to move
+      let livePhoto = photo_manager.hasLivePhoto(discovery_folder_path, discovered[i], path.basename(discovered[i]))
+      if (livePhoto !== undefined) {
+        photo_manager.movePhoto(discovery_folder_path + livePhoto, photo_library_path)
+      }
       // For each path, add photo to photomanager 
       let success = await photo_manager.addPhoto({ originalPath: new_path, container: 'main' })
     }

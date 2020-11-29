@@ -31,7 +31,8 @@ function ConvertDMSToDD(degrees, minutes, seconds, direction) {
 }
 
 // Function to check if there is a live photo for a specific image based on defines standard filepaths
-function hasLivePhoto(photoPath, filename) {
+exports.hasLivePhoto = (abs_path, photoPath, filename) => {
+	photoPath = abs_path + photoPath
 	// Get the enclosing folder path of the photo
 	let enclosingFolder = path.dirname(photoPath)
 	// Get filename without extension
@@ -41,7 +42,7 @@ function hasLivePhoto(photoPath, filename) {
 		for (var i = params.candidatePaths.length - 1; i >= 0; i--) {
 			let current = enclosingFolder + "/" + filenameNoExtension + params.candidatePaths[i]
 			if (fs.existsSync(current)) {
-				return current.replace(absolute_path, '')
+				return current.replace(abs_path, '')
 			}
 		}
 		return undefined
@@ -75,7 +76,9 @@ exports.addPhoto = async (photo) => {
 			return
 		}
 		// Check if there is a Live Photo version
-		photo.livePhotoPath = hasLivePhoto(absolute_path + photo.originalPath, photo.filename)
+		if (photo.livePhotoPath === undefined) {
+			photo.livePhotoPath = exports.hasLivePhoto(absolute_path, photo.originalPath, photo.filename)
+		}
 		// Get exif info of the photo
 		photo.metadata = await exif_manager.getEXIF(absolute_path + photo.originalPath)
 		// Convert GPS Coordinates to formatted string
@@ -147,13 +150,11 @@ function appendLeadingZeroes(n){
 function createdDate (file, dirFormat) {  
   const { birthtime } = fs.statSync(file)
   if (dirFormat) {
-	let current_datetime = new Date()
-	let formatted_date = current_datetime.getFullYear() + "/" + appendLeadingZeroes(current_datetime.getMonth() + 1) + "/" + appendLeadingZeroes(current_datetime.getDate())
+	let formatted_date = birthtime.getFullYear() + "/" + appendLeadingZeroes(birthtime.getMonth() + 1) + "/" + appendLeadingZeroes(birthtime.getDate())
 	return formatted_date
   }
   return birthtime
 }
-
 
 function makeThumbnail(imgPath, toPath) {
 	fs.mkdirSync(path.dirname(toPath), { recursive: true })

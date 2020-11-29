@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/fedeit/Fotografica_server#readme",
   "dependencies": {
+    "@tensorflow-models/mobilenet": "^2.0.4",
+    "@tensorflow/tfjs": "^2.7.0",
     "@tensorflow/tfjs-node": "^2.6.0",
     "canvas": "^2.6.1",
     "cli-progress": "^3.8.2",
