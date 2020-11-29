@@ -5,17 +5,19 @@ const app = express()
 const port = 80
 
 app.use(express.static(path.join(__dirname, 'photos_dir')));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'fotografica/build')));
 
 const database = require('./database_api/database')
 const exif_manager = require('./storage_api/exif_manager')
 const photo_manager = require('./database_api/photo_manager')
 const image_tracker = require('./storage_api/image_tracker')
+const image_analysis = require('./image_analysis/mobilenet_image_tagging')
 
 // Startup sequence
 database.verify((isSetup) => {
 	if (isSetup) {
 		image_tracker.autoDiscover()
+		image_analysis.autoDBTagging()
 	}
 })
 

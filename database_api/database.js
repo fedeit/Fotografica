@@ -16,6 +16,7 @@ exports.verify = (completion) => {
 				console.log("Database " + params.photosDBName + " created! ");
 				params.isNewSetup = true
 				photos = nano.use(params.photosDBName);
+				setupViews()
 				completion(true)
 			}).catch((err) => {
 				console.log(err)
@@ -28,13 +29,32 @@ exports.verify = (completion) => {
 	})
 }
 
+function setupViews() {
+	photos.insert(
+	  	{ "views": 
+	    	{ "untagged": 
+	  			{"map":
+	  				function(doc) {
+  						if(!doc.tagged) {
+	  						emit(doc._id, doc.path); 
+  						}
+  					}
+	 			} 
+    		}
+	  	}, '_design/photos', function (error, response) {
+		  	if (error) {
+			    console.log(error);
+			}
+		}
+	);
+}
+
 // Get last db photo refresh timestamp
 let lastRefreshVar = new Date().toISOString()
 
 // Function to get the id and paths of the photos
 exports.getPhotos = (quantity, batch, filter, callback) => {
 	const query = {
-		include_docs: true,
 		fields: [ "thumbPath", "_id" ],
 		limit: quantity,
 		skip: quantity * batch
@@ -51,6 +71,28 @@ exports.getPhotos = (quantity, batch, filter, callback) => {
 	  	})
 		callback(res)
 	});
+}
+
+exports.getUntaggedPhotos = (callback) => {
+	photos.view('photos', 'untagged', {
+		fields: [ "path", "_id", "_rev" ]
+	}, function (err, res) {
+	  	if (!err) {
+	  		callback(res)
+ 	  	}
+	  	else {
+	     	console.log(err);
+	  	}
+	});
+}
+
+exports.setTags = async (id, tags) => {
+	let photo = await photos.get(id)
+	let taggedPhoto = {
+		...photo,
+		...tags
+	}
+ 	await photos.insert(taggedPhoto, id);
 }
 
 exports.getPhoto = (id, callback) => {
@@ -96,10 +138,6 @@ exports.hasImage = async (path) => {
 exports.addPhoto = async (photo) => {
 	let response = await photos.insert(photo)
 	lastRefreshVar = new Date().toISOString()
-}
-
-exports.setMetadataFor = (meta, id) => {
-	db.push("/photos/" + id + "/exif", meta, true)
 }
 
 exports.getLastRefresh = (callback) => {
