@@ -13,11 +13,13 @@ let discovered = []
 var discoverAllImages = function(dir, absolute_path, done) {
   // Start from root dir
   fs.readdir(dir, (err, list) => {
+    if (err){
+      console.log(err)
+      return
+    }
     // Exclude hidden files and ignore some folders
     list = list.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
     list = list.filter(item => !(item.includes('converted') || item.includes('thumbnails')));
-
-    if (err) return done(err)
 
     var pending = list.length;
     if (!pending) return done()
