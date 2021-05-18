@@ -1,0 +1,11 @@
+{
+  "name": "fotografica-backend",
+  "version": "1.0.0",
+  "description": "Backend that serves the library api, auth, media, and static react build",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Federico Galbiati",
+  "license": "ISC"
+}

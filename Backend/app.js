@@ -7,17 +7,7 @@ const port = 80
 app.use(express.static(path.join(__dirname, 'photos_dir')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-const database = require('./database_api/database')
-const exif_manager = require('./storage_api/exif_manager')
-const photo_manager = require('./database_api/photo_manager')
-const image_tracker = require('./storage_api/image_tracker')
-
-// Startup sequence
-database.verify((isSetup) => {
-	if (isSetup) {
-		image_tracker.autoDiscover()
-	}
-})
+const database = require('./redisdb.js')
 
 app.get('/photos', (req, res) => {
 	let reqFilters = req.query
@@ -36,7 +26,7 @@ app.get('/photos', (req, res) => {
 	}
 
 	database.getPhotos(qnt, batch, filter, (photos) => {
-		res.status(200).send( {success: true, result: photos})
+		res.status(200).send({success: true, result: photos})
 	})
 })
 
@@ -67,14 +57,6 @@ app.get('/lastRefresh', (req, res) => {
 app.get('/allCoordinates', (req, res) => {
 	database.getAllCoordinates((coordinatesList) => {
 		res.status(200).send({success: true, result: coordinatesList})
-	})
-})
-
-app.get('/rotateClockwise', (req, res) => {
-	let photoId = req.query.id
-	if (photoId === undefined) { return res.send(400, {success: false}) }
-	photo_manager.rotateClockwise(photoId, () => {
-		res.status(200).send({success: true})
 	})
 })
 
