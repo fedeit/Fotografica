@@ -33,7 +33,7 @@ exports.listen = () => {
   });
   
   subscriber.on("message", (channel, message) => {
-    console.log(message);
+    console.log("Received trigger on " + channel);
     scanQueuedImages();
   });
   
