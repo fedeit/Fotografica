@@ -1,0 +1,11 @@
+{
+  "name": "fotografica-imagenet-tagger",
+  "version": "1.0.0",
+  "description": "Microservice that checks a redis queue and analyzes images using ImageNet",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Federico Galbiati",
+  "license": "ISC"
+}

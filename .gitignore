@@ -5,3 +5,5 @@ photos_dir_all/
 .env
 public/
 fotografica/build
+build/
+old/
