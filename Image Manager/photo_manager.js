@@ -41,13 +41,13 @@ let hasLivePhoto = (photoPath, callback) => {
 	// Get the enclosing folder path of the photo
 	let enclosingFolder = path.dirname(photoPath)
 	// Get filename without extension
-	let filenameNoExtension = path.basename(filename, path.extname(filename))
+	let filenameNoExtension = path.basename(photoPath, path.extname(photoPath))
 	let ext = [".MOV", ".mov"]
 	// Check if any of the candidate filepaths are valid
 	for (var i = ext.length - 1; i >= 0; i--) {
 		let livePhoto = enclosingFolder + "/" + filenameNoExtension + ext[i]
 		// Check if the file exists in the current directory.
-		access(livePhoto, constants.F_OK, (err) => {
+		fs.access(livePhoto, fs.constants.F_OK, (err) => {
 			if (err) {
 				callback(undefined)
 			} else {
@@ -61,15 +61,17 @@ let createdDate = (file) => {
 	const { birthtime } = fs.statSync(file)
 	return birthtime
 }
-  
+
+const supportedFormats = new Set([".jpg", ".JPG", ".png", ".PNG"])
+let isSupported = (format) => {
+  return supportedFormats.has(format);
+}
 
 // Add a photo to the system
 exports.addPhoto = (photoPath, callback) => {
 	let photo = {};
-	// Check if db has image
-	if (db.hasImageMetadata(photoPath)) { return callback(); }
 	// Extract file format
-	photo.format = path.extname(photoPath).replace('.' ,'').toLowerCase();
+	photo.format = path.extname(photoPath);
 	// Check if image is supported
 	if (isSupported(photo.format)) { photo.path = photoPath; }
 	else { return callback(); }
@@ -79,7 +81,7 @@ exports.addPhoto = (photoPath, callback) => {
 	hasLivePhoto(process.env.LIBRARY_PATH + photo.path, (livePath) => {
 		photo.livePhotoPath = livePath
 		// Get exif info of the photo
-		getEXIF(absolute_path + photo.path, (metadata) => {
+		getEXIF(process.env.LIBRARY_PATH + photo.path, (metadata) => {
 			photo.metadata = metadata;
 			// Convert GPS Coordinates to formatted string
 			if (photo.metadata !== undefined && photo.metadata.gpsLatitude !== undefined) {
@@ -89,7 +91,7 @@ exports.addPhoto = (photoPath, callback) => {
 			}
 			// Make a thumbnail for the image
 			makeThumbnail(photo, (thumbPath) => {
-				photo.thumbPath = thumnPath
+				photo.thumbPath = thumbPath
 				// Get time when photo was created
 				photo.fileTimestamp = createdDate(process.env.LIBRARY_PATH + photo.path);
 				callback(photo);	

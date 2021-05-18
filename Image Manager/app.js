@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require("express");
-const imageTagger = require("./service.js");
+const imageManager = require("./service.js");
 
 const app = express()
 const port = 3002
@@ -11,5 +11,5 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Fotogragica Image Manager service listening at http://localhost:${port}`);
-  imageTagger.listen();
+  imageManager.listen();
 });

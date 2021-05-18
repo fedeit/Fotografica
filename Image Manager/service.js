@@ -11,12 +11,10 @@ let scanNext = () => {
       db.commitImages();
       return 
     };
-    console.log("...getting next image");
     db.getNext(async (path) => {
       if (path == null) { return }
-      let metadata = await manager.addPhoto(path, (photo) => {
-        //db.pushMeta(photo);
-        console.log("...image done " + path + ":\n"+ JSON.stringify(tags));
+      manager.addPhoto(path, (photo) => {
+        db.pushMeta(path, photo);
         scanNext();
       });
     });

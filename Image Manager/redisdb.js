@@ -36,6 +36,5 @@ exports.commitImages = () => {
             console.error(err);
             return;
         }
-        broadcastDone();
     });      
 }
