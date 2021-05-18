@@ -4,8 +4,8 @@ const path = require('path');
 const app = express()
 const port = 80
 
-app.use(express.static(process.env.LIBRARY_PATH));
-app.use(express.static(process.env.LIBRARY_THUMB_PATH));
+app.use("/library", express.static(process.env.LIBRARY_PATH));
+app.use("/thumbs", express.static(process.env.LIBRARY_THUMB_PATH));
 app.use(express.static(path.join(__dirname, 'build')));
 
 const database = require('./redisdb.js')
@@ -27,7 +27,16 @@ app.get('/photos', (req, res) => {
 	}
 
 	database.getPhotos(qnt, batch, filter, (photos) => {
-		res.status(200).send({success: true, result: photos})
+		let processedPhotos = [];
+		for (const [img, value] of Object.entries(photos)) {
+			let photo = {}
+			photo.thumbPath = "/thumbs/" + img;
+			photo.id = img
+			photo.fileTimestamp = value.fileTimestamp
+			processedPhotos.push(photo)
+		}
+		processedPhotos = processedPhotos.sort((a, b) => b.date - a.date )
+		res.status(200).send({success: true, result: processedPhotos})
 	})
 })
 

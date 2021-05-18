@@ -20,11 +20,20 @@ exports.queueLength = (callback) => {
 }
 
 exports.getPhotos = (qnt, batch, filter, callback) => {
-    client.hkeys(PATH_TO_METADATA_MAP, callback)
+    client.hgetall(PATH_TO_METADATA_MAP, (error, resp) => {
+        let processedPhotos = {}
+        for (const [img, value] of Object.entries(resp)) {
+			processedPhotos[img] = JSON.parse(value);
+            processedPhotos[img].fileTimestamp = new Date(processedPhotos[img].fileTimestamp);
+		}
+        callback(processedPhotos)
+    })
 }
 
 exports.getPhoto = (photo, callback) => {
-    client.hget(PATH_TO_METADATA_MAP, photo, callback)
+    client.hget(PATH_TO_METADATA_MAP, photo, (err, resp) => {
+        callback(JSON.parse(resp))
+    })
 }
 
 exports.getLastRefresh = (callback) => {

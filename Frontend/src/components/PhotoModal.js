@@ -53,6 +53,7 @@ class PhotoModal extends Component {
 	}
 
 	imageOpened(id) {
+		console.log("Getting photo " + id)
 		getPhoto(id, (photo) => {
 			this.setState({selectedImage: photo});
 		});
@@ -83,7 +84,7 @@ class PhotoModal extends Component {
 				                    ? <video style={{width: '100%'}} controls autoPlay onEnded={ this.finishedLivePhoto }>
 									    <source src={url + this.state.selectedImage.livePhotoPath} type="video/mp4" />
 									  </video>
-				                    : <img src={url + "/" + this.state.selectedImage.path + '?hash=' + this.state.imageHash } style={{width: '100%'}} />
+				                    : <img src={url + "/library/" + this.state.selectedImage.path + '?hash=' + this.state.imageHash } style={{width: '100%'}} />
 
 				                }
 	                        </div>
