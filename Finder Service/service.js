@@ -2,8 +2,6 @@ const fs = require('fs')
 const path = require('path')
 const db = require('./redisdb.js')
 
-
-
 const supportedFormats = new Set([".jpg", ".JPG", ".png", ".PNG"])
 const formatsToConvert = new Set([".HEIC", ".heic"])
 let isSupported = (format) => {
@@ -14,6 +12,7 @@ let needsConversion = (format) => {
   return formatsToConvert.has(format);
 }
 
+let scanning = false;
 let queue = [];
 // Recursive function to find all valid image files
 let analyzeFolder = (dir, done) => {
@@ -58,6 +57,7 @@ let processNext = () => {
   if (imgPath === undefined) {
     console.info("Done parsing all images, committing to database");
     db.commitImages();
+    scanning = false;
     return;
   }
   db.hasImage(imgPath, (exists) => {
@@ -69,9 +69,11 @@ let processNext = () => {
 }
 
 exports.fullScan = () => {
-    // Make a complete scan of the library
-    console.log("Parsing all images from " + process.env.LIBRARY_PATH);
-    analyzeFolder(process.env.LIBRARY_PATH, (err) => {
-      processNext();
-    });
+  if (scanning) { return };
+  scanning = true;
+  // Make a complete scan of the library
+  console.log("Parsing all images from " + process.env.LIBRARY_PATH);
+  analyzeFolder(process.env.LIBRARY_PATH, (err) => {
+    processNext();
+  });
 }
