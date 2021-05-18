@@ -1,7 +1,6 @@
 const redis = require("redis");
 const client = redis.createClient();
 
-const IMAGES_SET = "global_images_path_set";
 const IMAGENET_QUEUE = "global_imagenet_path_queue";
 
 const multi = client.multi();
