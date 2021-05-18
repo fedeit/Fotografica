@@ -2,10 +2,7 @@ const tfnode = require('@tensorflow/tfjs-node');
 const mobilenet = require('@tensorflow-models/mobilenet');
 const fs = require('fs')
 
-exports.autoDBTagging = (path) => {
-	progress.update(i);
-	// Get photo, value is array with 0: path, 1: _rev
-	let photo = photos[i]
+exports.autoDBTagging = async (path) => {
 	// Run mobilenetImage
 	let tags = await mobilenetImage(process.env.LIBRARY_PATH + path)
 	// Map only classifications with 30% plus

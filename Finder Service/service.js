@@ -14,7 +14,7 @@ let needsConversion = (format) => {
   return formatsToConvert.has(format);
 }
 
-
+let queue = [];
 // Recursive function to find all valid image files
 let analyzeFolder = (dir, done) => {
   // Read the lookup directory
@@ -42,11 +42,9 @@ let analyzeFolder = (dir, done) => {
           let imgPath = file.replace(process.env.LIBRARY_PATH, '')
           let format = path.extname(imgPath)
           // Check if format is valid
-          if (isSupported(format) || needsConversion(format)) {
+          if (isSupported(format)) {
             // Check if image is not in db yet
-            if (!db.hasImage(imgPath)) {
-              db.addImage(imgPath);
-            }
+            queue.push(imgPath);
           }
           if (!--pending) done()
         }
@@ -55,16 +53,25 @@ let analyzeFolder = (dir, done) => {
   });
 };
 
+let processNext = () => {
+  let imgPath = queue.shift();
+  if (imgPath === undefined) {
+    console.info("Done parsing all images, committing to database");
+    db.commitImages();
+    return;
+  }
+  db.hasImage(imgPath, (exists) => {
+    if (!exists) {
+      db.addImage(imgPath);
+    }
+    processNext();
+  })
+}
 
 exports.fullScan = () => {
     // Make a complete scan of the library
     console.log("Parsing all images from " + process.env.LIBRARY_PATH);
     analyzeFolder(process.env.LIBRARY_PATH, (err) => {
-        if (err) {
-          console.error(err);
-        } else {
-          console.info("Done parsing all images");
-          db.commitImages();
-        }
+      processNext();
     });
 }

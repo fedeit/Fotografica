@@ -9,12 +9,22 @@ client.on("error", (error) => {
     console.error(error);
 });
 
-exports.hasNext = () => {
-    return ! (client.llen(IMAGENET_QUEUE) == 0);
+exports.hasNext = (callback) => {
+    client.llen(IMAGENET_QUEUE, (err, resp) => {
+        callback(resp != 0);
+    });
 }
 
-exports.getNext = () => {
-    return client.rpop(IMAGENET_QUEUE);
+exports.queueLength = (callback) => {
+    client.llen(IMAGENET_QUEUE, (err, resp) => {
+        callback(resp);
+    });
+}
+
+exports.getNext = (callback) => {
+    return client.rpop(IMAGENET_QUEUE, (err, resp) => {
+        callback(resp);
+    });
 }
 
 exports.commitImages = () => {

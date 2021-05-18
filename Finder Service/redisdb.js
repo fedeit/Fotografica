@@ -1,6 +1,6 @@
 const redis = require("redis");
 const client = redis.createClient();
-const publisher = client.duplicate();
+const publisher = redis.createClient();
 
 const IMAGES_SET = "global_images_path_set";
 const IMAGES_QUEUE = "global_images_path_queue";
@@ -12,7 +12,7 @@ const multi = client.multi();
 
 let broadcastDone = () => {
     publisher.publish(DISCOVERY_CHANNEL, STATUS_DONE);
-    console.log("Published done");
+    console.log("Publishing alert to channel");
 }
 
 client.on("error", (error) => {
@@ -25,8 +25,10 @@ exports.addImage = (path) => {
     multi.sadd(IMAGES_SET, path);
 }
 
-exports.hasImage = (path) => {
-    return client.sismember(IMAGES_SET, path);
+exports.hasImage = (path, callback) => {
+    return client.sismember(IMAGES_SET, path, (error, resp) => {
+        callback(resp == 1);
+    });
 }
 
 exports.commitImages = () => {

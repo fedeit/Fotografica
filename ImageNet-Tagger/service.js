@@ -6,12 +6,26 @@ const tagger = require('./image_analysis/mobilenet_image_tagging');
 const subscriber = redis.createClient();
 const DISCOVERY_CHANNEL = "images_discovery_channel"
 
+let scanNext = () => {
+  db.hasNext((exists) => {
+    if (!exists) { return };
+    console.log("...getting next image");
+    db.getNext(async (path) => {
+      if (path == null) { return }
+      let tags = await tagger.autoDBTagging(path);
+      //db.pushTags(tags);
+      console.log("...image done " + JSON.stringify(tags));
+      scanNext();  
+    });
+  })
+}
+
 let scanQueuedImages = () => {
-  while (db.hasNext()) {
-    let path = db.getNext();
-    let tags = tagger.autoDBTagging(path);
-    db.pushTags(tags);
-  }
+  console.log("Scanning images");
+  db.queueLength((l) => {
+    console.log("...total " + l);
+  })
+  scanNext();
 }
 
 exports.listen = () => {
