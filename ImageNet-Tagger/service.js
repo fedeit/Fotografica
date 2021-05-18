@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 const redis = require("redis");
 const db = require('./redisdb.js');
 const tagger = require('./image_analysis/mobilenet_image_tagging');
@@ -8,13 +7,16 @@ const DISCOVERY_CHANNEL = "images_discovery_channel"
 
 let scanNext = () => {
   db.hasNext((exists) => {
-    if (!exists) { return };
+    if (!exists) {
+      db.commitImages();
+      return 
+    };
     console.log("...getting next image");
     db.getNext(async (path) => {
       if (path == null) { return }
       let tags = await tagger.autoDBTagging(path);
-      //db.pushTags(tags);
-      console.log("...image done " + JSON.stringify(tags));
+      db.pushTags(path, tags);
+      console.log("...image done " + path + ":\n"+ JSON.stringify(tags));
       scanNext();  
     });
   })

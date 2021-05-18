@@ -12,8 +12,7 @@ exports.autoDBTagging = async (path) => {
 	// Make object for photo in db
 	let data = {
 		tags: tagsArray,
-		tagsDetail: significantTags,
-		tagged: true
+		tagsDetail: significantTags
 	}
 	return data;
 }
