@@ -112,8 +112,9 @@ function makeThumbnail(photo, callback) {
 	.toFile(process.env.LIBRARY_THUMB_PATH + photo.path, (err, resizeImage) => {
 		if (err) {
 			console.log(process.env.LIBRARY_PATH + photo.path + " Error making thumbnail! " + process.env.LIBRARY_THUMB_PATH + photo.path + " " + err);
+			callback();
 		} else {
-			callback(true);
+			callback(process.env.LIBRARY_THUMB_PATH + photo.path);
 		}
 	});
 }

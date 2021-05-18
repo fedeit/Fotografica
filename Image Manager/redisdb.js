@@ -36,5 +36,6 @@ exports.commitImages = () => {
             console.error(err);
             return;
         }
+        console.log("Committed image metadata")
     });      
 }
