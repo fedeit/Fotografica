@@ -1,0 +1,16 @@
+{
+  "name": "fotografica-finder-service",
+  "version": "1.0.0",
+  "description": "Service that discovers new pictures and signals to the workers to process it",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Federico Galbiati",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^9.0.2",
+    "express": "^4.17.1",
+    "redis": "^3.1.2"
+  }
+}
