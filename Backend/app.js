@@ -4,8 +4,9 @@ const path = require('path');
 const app = express()
 const port = 80
 
-app.use(express.static(path.join(__dirname, 'photos_dir')));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(process.env.LIBRARY_PATH));
+app.use(express.static(process.env.LIBRARY_THUMB_PATH));
+app.use(express.static(path.join(__dirname, 'build')));
 
 const database = require('./redisdb.js')
 

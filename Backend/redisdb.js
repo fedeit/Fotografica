@@ -23,7 +23,7 @@ exports.getPhotos = (qnt, batch, filter, callback) => {
     client.hkeys(PATH_TO_METADATA_MAP, callback)
 }
 
-exports.getPhotos = (photo, callback) => {
+exports.getPhoto = (photo, callback) => {
     client.hget(PATH_TO_METADATA_MAP, photo, callback)
 }
 
